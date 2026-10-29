@@ -49,12 +49,15 @@ export default function RootLayout({
             __html: `
               try {
                 var theme = localStorage.getItem('anvieo_theme');
-                if (theme) {
-                  document.documentElement.setAttribute('data-theme', theme);
-                } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                if (theme === 'dark') {
                   document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                  document.documentElement.setAttribute('data-theme', 'light');
+                  localStorage.setItem('anvieo_theme', 'light');
                 }
-              } catch (e) {}
+              } catch (e) {
+                document.documentElement.setAttribute('data-theme', 'light');
+              }
             `,
           }}
         />

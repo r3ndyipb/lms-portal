@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import PortalHeader from "./PortalHeader";
 import PortalSidebar from "./PortalSidebar";
 import PortalDashboardPreview from "./PortalDashboardPreview";
@@ -36,12 +37,21 @@ interface StudentPortalShellProps {
 }
 
 export default function StudentPortalShell({ initialNav = "beranda" }: StudentPortalShellProps) {
+  const router = useRouter();
+  const [isAuthReady, setIsAuthReady] = useState(false);
   const [activeNav, setActiveNav] = useState<PortalNavId>(initialNav);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [selectedKoridorCourse, setSelectedKoridorCourse] = useState<string>("Memulai Pemrograman dengan Python");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const user = localStorage.getItem("portal_user");
+      if (!user) {
+        router.replace("/login");
+        return;
+      }
+      setIsAuthReady(true);
+
       const stored = localStorage.getItem("portal_sidebar_collapsed");
       if (stored !== null) {
         setSidebarCollapsed(stored === "true");
@@ -122,6 +132,35 @@ export default function StudentPortalShell({ initialNav = "beranda" }: StudentPo
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
+
+  if (!isAuthReady) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "var(--bx-bg, #FBF8F1)",
+          color: "var(--brand, #0A2E52)",
+          gap: "14px",
+        }}
+      >
+        <div className="portal-spinner" style={{ width: "28px", height: "28px" }} />
+        <span
+          style={{
+            fontFamily: "var(--font-heading)",
+            fontSize: "0.95rem",
+            fontWeight: "700",
+            letterSpacing: "0.02em",
+          }}
+        >
+          Memuat Portal Belajar...
+        </span>
+      </div>
+    );
+  }
 
   // Jika sedang membuka Kelas Belajar (Classroom Viewer Mode), tampilkan full-screen tanpa sidebar luar
   if (activeNav === "classroom") {

@@ -11,7 +11,7 @@ export default function ThemeToggle() {
     setMounted(true);
     const savedTheme = localStorage.getItem("anvieo_theme") as "light" | "dark" | null;
     const currentDocTheme = document.documentElement.getAttribute("data-theme") as "light" | "dark" | null;
-    const active = savedTheme || currentDocTheme || "light";
+    const active = savedTheme === "dark" || currentDocTheme === "dark" ? "dark" : "light";
     setTheme(active);
     document.documentElement.setAttribute("data-theme", active);
   }, []);
